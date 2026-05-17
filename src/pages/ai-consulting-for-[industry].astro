@@ -1,0 +1,118 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import CTA from '~/components/CTA.astro';
+import {
+  industries,
+  getRelatedIndustries,
+} from '~/data/industries';
+import { sectors } from '~/data/sectors';
+import { buildServiceSchema, buildFaqSchema } from '~/lib/seo';
+
+export const getStaticPaths = () =>
+  industries.map((industry) => ({
+    params: { industry: industry.slug },
+    props: { industry },
+  }));
+
+const { industry } = Astro.props;
+
+const url = `/ai-consulting-for-${industry.slug}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Industries', url: '/industries/' },
+  { name: industry.shortName, url },
+];
+
+const relatedIndustries = getRelatedIndustries(industry.slug).map((i) => ({
+  href: `/ai-consulting-for-${i.slug}/`,
+  label: i.name,
+  description: i.tagline,
+}));
+
+const sectorLinks = sectors.map((s) => ({
+  href: `/services/${s.slug}/`,
+  label: `${s.name} for ${industry.shortName}`,
+  description: s.tagline,
+}));
+---
+
+<BaseLayout
+  title={industry.name}
+  description={industry.intro}
+  canonical={url}
+  breadcrumbs={breadcrumbs}
+  extraJsonLd={[
+    buildServiceSchema({
+      name: industry.name,
+      description: industry.intro,
+      url,
+    }),
+    buildFaqSchema(industry.faqs),
+  ]}
+>
+  <article class="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <p class="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-700">
+      Industries &middot; {industry.group}
+    </p>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      {industry.name}
+    </h1>
+    <p class="mt-4 text-xl text-slate-700">{industry.tagline}</p>
+
+    <div class="prose-content mt-8 text-slate-700">
+      <p>{industry.intro}</p>
+
+      <h2>High-impact AI use cases for {industry.shortName}</h2>
+      <ul>
+        {industry.useCases.map((u) => <li>{u}</li>)}
+      </ul>
+
+      <h2>What we hear from {industry.audience}</h2>
+      <ul>
+        {industry.challenges.map((c) => <li>{c}</li>)}
+      </ul>
+
+      <h2>How we work with {industry.shortName}</h2>
+      <p>
+        Every engagement starts with a discovery sprint, usually 2 to 4 weeks,
+        where we map your workflows, identify the highest-ROI AI opportunities
+        and put a 90-day roadmap on the table. From there we either deliver the
+        work directly or work alongside your team to ship it.
+      </p>
+
+      <h2>FAQs about AI consulting for {industry.shortName}</h2>
+      {
+        industry.faqs.map((f) => (
+          <>
+            <h3>{f.question}</h3>
+            <p>{f.answer}</p>
+          </>
+        ))
+      }
+    </div>
+
+    <CTA
+      title={`Ready to put AI to work in your ${industry.shortName.toLowerCase()} business?`}
+      body="Book a free 30-minute call. We will diagnose your highest-impact AI opportunity and outline what a project would look like."
+    />
+
+    {
+      relatedIndustries.length > 0 && (
+        <RelatedLinks
+          title="Related industries we work with"
+          intro="A lot of the AI work overlaps across adjacent industries. Here is where else we operate."
+          links={relatedIndustries}
+        />
+      )
+    }
+
+    <RelatedLinks
+      title={`AI services for ${industry.shortName}`}
+      intro="Each engagement combines strategy, training, automation and custom builds, pick the entry point that fits where you are."
+      links={sectorLinks}
+    />
+  </article>
+</BaseLayout>

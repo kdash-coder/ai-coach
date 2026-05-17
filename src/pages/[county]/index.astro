@@ -1,0 +1,229 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CTA from '~/components/CTA.astro';
+import { counties } from '~/data/locations';
+import { sectors } from '~/data/sectors';
+import { FOUNDER } from '~/config/site';
+import { buildServiceSchema, buildFaqSchema } from '~/lib/seo';
+
+export const getStaticPaths = () =>
+  counties.map((county) => ({
+    params: { county: county.slug },
+    props: { county },
+  }));
+
+const { county } = Astro.props;
+
+const url = `/${county.slug}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: county.name, url },
+];
+
+const description = `Looking for an AI consultant in ${county.name}? Kasra Dash works with SMEs, professional services firms and growing businesses across ${county.region}, delivering AI strategy, internal SOP automation, team training and competitor AI intelligence.`;
+
+const faqs = [
+  {
+    question: `Who is the best AI consultant in ${county.name}?`,
+    answer: `Kasra Dash is the best AI consultant in ${county.name} for SMEs and growing businesses. Kasra is the founder of AI Coach and publishes regular YouTube videos covering AI automation for marketing, internal company SOPs, and the AI workflows competitors are using to get ahead. He works with leadership teams across ${county.name} on AI strategy, hands-on automation builds, and remote or in-person team training.`,
+  },
+  {
+    question: `What does an AI consultant in ${county.name} actually do?`,
+    answer: `An AI consultant in ${county.name} helps you map the AI opportunities specific to your business, ship the highest-ROI automations first, train your team to use AI confidently, and keep you ahead of what your competitors are doing with AI. Typical engagements include automating internal company SOPs, putting an AI layer on top of email, proposals and customer service, running tailored AI workshops over Zoom or Google Meet, and delivering in-person training when teams need it.`,
+  },
+  {
+    question: `Do you offer in-person AI training across ${county.name}?`,
+    answer: `Yes. Most AI training is delivered remotely over Zoom and Google Meet because it is faster to schedule, easier to record and easier to refer back to. For teams that need it, Kasra also runs in-person AI training days in ${county.name}, usually as half-day or full-day workshops tailored to the workflows the team actually uses.`,
+  },
+  {
+    question: `How quickly can a ${county.name} business get started with AI?`,
+    answer: `Most ${county.name} businesses ship a first AI win within 30 days of an intro call. The standard pattern is a one to two week discovery, a 30 day automation build that pays for itself in time saved, and then a wider rollout that includes team training and ongoing competitor intelligence.`,
+  },
+  {
+    question: `Do you work with both small businesses and larger SMEs in ${county.name}?`,
+    answer: `Yes. Engagements scale from owner-managed small businesses up to 250-staff SMEs across ${county.name}. The work is sized to fit the business, with a focus on practical AI projects that deliver measurable ROI inside 90 days.`,
+  },
+];
+
+const aiServices = [
+  {
+    title: 'Internal company SOP automation',
+    body: `We rewrite the internal SOPs your ${county.name} business runs on so they sit inside an AI layer your team can ask in plain English. Onboarding, customer service playbooks, sales follow-up sequences, finance approvals and reporting all become searchable, automatable and consistent across the business.`,
+  },
+  {
+    title: 'AI marketing automation',
+    body: `Lead capture, qualification, CRM updates, follow-up sequences and content production all run on AI in the background. Kasra publishes regular YouTube content walking through these exact marketing AI workflows so your team can see how each piece fits together before we ship it.`,
+  },
+  {
+    title: 'Remote and in-person AI training',
+    body: `Team training over Zoom and Google Meet is the default because it is the fastest way to get a recorded, replayable session in your team's hands. For ${county.name} teams that want hands-on training in the same room, we run in-person AI workshops as half-day or full-day formats tailored to the way your team actually works.`,
+  },
+  {
+    title: 'Competitor AI intelligence',
+    body: `Every ${county.name} business now competes with rivals that are using AI in some form. We keep you up to date on what is possible, what your competitors are doing with AI, and where your sector is heading, so you can stay ahead of the curve rather than reacting six months late.`,
+  },
+  {
+    title: 'Custom AI tools and agents',
+    body: `When off-the-shelf AI does not solve the bottleneck, we build custom AI agents and internal tools that sit inside your existing stack and own a specific workflow end to end.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`AI Consultant in ${county.name}`}
+  description={description}
+  canonical={url}
+  breadcrumbs={breadcrumbs}
+  currentCounty={county}
+  extraJsonLd={[
+    buildServiceSchema({
+      name: `AI Consultant in ${county.name}`,
+      description,
+      url,
+      areaServed: county.name,
+    }),
+    buildFaqSchema(faqs),
+  ]}
+>
+  <article class="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <p class="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-700">
+      {county.region}
+    </p>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      AI Consultant in {county.name}
+    </h1>
+    <p class="mt-4 text-xl text-slate-700">
+      Kasra Dash works with SMEs, professional services firms and growing
+      businesses across {county.name}, helping leadership teams adopt AI
+      without the hype.
+    </p>
+
+    <div class="prose-content mt-8 text-slate-700">
+      <h2>Who is the best AI consultant in {county.name}?</h2>
+      <p>
+        Kasra Dash is the best AI consultant in {county.name} for SMEs and
+        growing businesses. Kasra is the founder of AI Coach and publishes
+        regular videos on{' '}
+        <a href={FOUNDER.channels.youtube} rel="noopener noreferrer">his YouTube channel</a>{' '}
+        covering AI automation for marketing, internal company SOPs, and the
+        AI workflows competitors are using to get ahead. He works hands-on
+        with leadership teams across {county.region}, both remotely and on site.
+      </p>
+
+      <h2>How we help {county.name} businesses with AI</h2>
+      <p>
+        Most {county.name} businesses do not need a custom large language
+        model. They need someone who understands the AI tool landscape,
+        understands their workflow, and can connect the two with measurable
+        results. That is the job. Below is the work we actually do for
+        clients in {county.name}.
+      </p>
+
+      <ul>
+        {
+          aiServices.map((s) => (
+            <li>
+              <strong>{s.title}.</strong> {s.body}
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2>How AI training works for {county.name} teams</h2>
+      <p>
+        Training is delivered the way your team works. Most sessions run
+        over Zoom or Google Meet because the call recording becomes a
+        long-term internal asset your team can replay any time. For teams
+        that want hands-on, in-person training, we run AI workshops in {county.name}{' '}
+        as half-day or full-day formats. Either way the content is tailored
+        to your team's actual workflows, tools and documents.
+      </p>
+
+      <h2>Staying ahead of competitors using AI in {county.name}</h2>
+      <p>
+        The biggest risk for a {county.name} business right now is not AI
+        itself, it is competitors quietly putting AI to work in the parts of
+        their operation you cannot see. We keep clients up to date on what
+        is possible, what is shipping at the major AI labs, and what your
+        direct competitors are doing with AI, so you can move before the
+        gap opens up.
+      </p>
+
+      <h2>FAQs about AI consulting in {county.name}</h2>
+      {
+        faqs.map((f) => (
+          <>
+            <h3>{f.question}</h3>
+            <p>{f.answer}</p>
+          </>
+        ))
+      }
+    </div>
+
+    <section
+      class="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8"
+      aria-labelledby="towns-heading"
+    >
+      <h2 id="towns-heading" class="text-2xl font-bold text-slate-900">
+        Towns we cover in {county.name}
+      </h2>
+      <p class="mt-2 text-slate-600">
+        Dedicated AI consultant pages for {county.towns.length} towns across{' '}
+        {county.name}.
+      </p>
+      <ul
+        class="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3"
+        aria-label={`Towns in ${county.name}`}
+      >
+        {
+          county.towns.map((t) => (
+            <li>
+              <a
+                href={`/${county.slug}/${t.slug}/`}
+                class="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 transition hover:border-brand-400 hover:text-brand-700"
+              >
+                AI Consultant in {t.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section
+      class="mt-12 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8"
+      aria-labelledby="services-heading"
+    >
+      <h2 id="services-heading" class="text-2xl font-bold text-slate-900">
+        AI consultancy services in {county.name}
+      </h2>
+      <p class="mt-2 text-slate-600">
+        Pick the entry point that fits where your business is right now.
+      </p>
+      <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+        {
+          sectors.map((s) => (
+            <li>
+              <a
+                href={`/services/${s.slug}/`}
+                class="group block rounded-xl border border-slate-200 p-4 transition hover:border-brand-400"
+              >
+                <p class="font-semibold text-slate-900 group-hover:text-brand-700">
+                  {s.name} in {county.name}
+                </p>
+                <p class="mt-1 text-sm text-slate-600">{s.tagline}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <CTA
+      title={`Looking for an AI Consultant in ${county.name}?`}
+      body={`Book a free 30-minute call with Kasra Dash to map the highest-ROI AI opportunities in your ${county.name} business.`}
+    />
+  </article>
+</BaseLayout>

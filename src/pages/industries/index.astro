@@ -1,0 +1,65 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CTA from '~/components/CTA.astro';
+import { industries, industriesByGroup } from '~/data/industries';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Industries', url: '/industries/' },
+];
+
+const grouped = industriesByGroup();
+const groupOrder = Object.keys(grouped);
+---
+
+<BaseLayout
+  title="AI Consulting by Industry"
+  description={`AI consulting for ${industries.length} industries, from law firms and finance to healthcare, manufacturing, retail and beyond.`}
+  canonical="/industries/"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      AI Consulting by Industry
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-slate-700">
+      We work with {industries.length} industries across the UK. Pick yours
+      below to see the AI use cases, challenges and engagement patterns
+      specific to your sector.
+    </p>
+
+    <div class="mt-12 space-y-12">
+      {
+        groupOrder.map((group) => (
+          <section aria-labelledby={`group-${group.replace(/\s+/g, '-').toLowerCase()}`}>
+            <h2
+              id={`group-${group.replace(/\s+/g, '-').toLowerCase()}`}
+              class="text-2xl font-bold text-slate-900"
+            >
+              {group}
+            </h2>
+            <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {grouped[group].map((i) => (
+                <li>
+                  <a
+                    href={`/ai-consulting-for-${i.slug}/`}
+                    class="group block h-full rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-brand-400"
+                  >
+                    <p class="font-semibold text-slate-900 group-hover:text-brand-700">
+                      {i.name}
+                    </p>
+                    <p class="mt-2 text-sm text-slate-600">{i.tagline}</p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+
+    <CTA />
+  </section>
+</BaseLayout>

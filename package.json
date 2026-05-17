@@ -1,0 +1,24 @@
+{
+  "name": "ai-coach",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "deploy": "astro build && wrangler deploy"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
+    "@tailwindcss/vite": "~4.1.18",
+    "astro": "^6.3.3",
+    "tailwindcss": "~4.1.18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,69 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CTA from '~/components/CTA.astro';
+import { counties, countiesByRegion } from '~/data/locations';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/locations/' },
+];
+
+const byRegion = countiesByRegion();
+const regionsInOrder = Object.keys(byRegion).sort();
+
+const totalTowns = counties.reduce((sum, c) => sum + c.towns.length, 0);
+---
+
+<BaseLayout
+  title="AI Consultant Locations Across the UK"
+  description={`AI consultancy coverage across the UK. ${counties.length} counties and over ${totalTowns} towns. Find dedicated AI consulting pages for your area.`}
+  canonical="/locations/"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      AI Consultant near you
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-slate-700">
+      AI consultancy coverage across the UK. {counties.length} counties and
+      over {totalTowns} towns. Click your county to find your nearest local
+      page.
+    </p>
+
+    <div class="mt-12 space-y-12">
+      {
+        regionsInOrder.map((region) => (
+          <section aria-labelledby={`region-${region.replace(/\s+/g, '-').toLowerCase()}`}>
+            <h2
+              id={`region-${region.replace(/\s+/g, '-').toLowerCase()}`}
+              class="text-2xl font-bold text-slate-900"
+            >
+              {region}
+            </h2>
+            <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {byRegion[region].map((c) => (
+                <li>
+                  <a
+                    href={`/${c.slug}/`}
+                    class="group block rounded-xl border border-slate-200 bg-white p-4 transition hover:border-brand-400"
+                  >
+                    <p class="font-semibold text-slate-900 group-hover:text-brand-700">
+                      AI Consultant in {c.name}
+                    </p>
+                    <p class="mt-1 text-sm text-slate-500">
+                      {c.towns.length} town{c.towns.length === 1 ? '' : 's'} covered
+                    </p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+
+    <CTA />
+  </section>
+</BaseLayout>

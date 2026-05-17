@@ -1,0 +1,222 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import CTA from '~/components/CTA.astro';
+import { sectors } from '~/data/sectors';
+import { counties } from '~/data/locations';
+import { industries } from '~/data/industries';
+
+const featuredCounties = [...counties]
+  .sort((a, b) => b.towns.length - a.towns.length)
+  .slice(0, 6);
+const totalCounties = counties.length;
+const totalTowns = counties.reduce((sum, c) => sum + c.towns.length, 0);
+
+const featuredIndustrySlugs = [
+  'small-businesses',
+  'smes',
+  'law-firms',
+  'finance',
+  'healthcare',
+  'manufacturing',
+  'ecommerce',
+  'professional-services',
+  'saas-companies',
+];
+const featuredIndustries = featuredIndustrySlugs
+  .map((slug) => industries.find((i) => i.slug === slug))
+  .filter((i): i is (typeof industries)[number] => i !== undefined);
+import { SITE } from '~/config/site';
+import { buildFaqSchema } from '~/lib/seo';
+
+const title = `AI Consultant UK | ${SITE.name}`;
+const description =
+  'AI Consultant helping UK businesses adopt AI. Strategy, automation, training and custom AI solutions for SMEs nationwide. Book a free 30-minute call.';
+
+const faqs = [
+  {
+    question: 'What does an AI Consultant actually do?',
+    answer:
+      'An AI Consultant helps you identify where AI can add value to your business, picks the right tools, builds the automations or custom solutions you need, and trains your team to use them. Good AI consultants focus on measurable business outcomes, not just technology for its own sake.',
+  },
+  {
+    question: 'Do you only work with large enterprises?',
+    answer:
+      'No. Most of our clients are SMEs and owner-managed businesses with 10 to 250 staff. AI delivers some of the highest ROI in small teams, every hour of admin removed is a meaningful percentage of capacity back.',
+  },
+  {
+    question: 'Where do you work?',
+    answer:
+      'We work with clients across the UK. Most engagements are delivered remotely with occasional on-site days. We have a particular concentration of clients across the North West of England.',
+  },
+  {
+    question: 'How quickly can we see results?',
+    answer:
+      'Most clients ship a meaningful first AI win within 30 days, typically a workflow automation or AI tool that frees up a measurable number of hours per week.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/"
+  extraJsonLd={[buildFaqSchema(faqs)]}
+>
+  <section class="bg-gradient-to-b from-brand-50 to-white">
+    <div class="mx-auto max-w-5xl px-4 py-20 sm:px-6 sm:py-28">
+      <p class="text-sm font-semibold uppercase tracking-wider text-brand-700">
+        AI Consultancy &middot; UK-wide
+      </p>
+      <h1 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
+        AI Consultant helping UK businesses turn AI into measurable results
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg text-slate-700">
+        {SITE.tagline}. From AI strategy and team training to workflow automation and
+        custom-built AI tools, we deliver projects that move the needle, not the hype.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a
+          href="/contact/"
+          class="rounded-lg bg-brand-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800"
+        >
+          Book a free 30-minute call
+        </a>
+        <a
+          href="/services/"
+          class="rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-brand-400"
+        >
+          See how we help
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6" aria-labelledby="services-heading">
+    <h2 id="services-heading" class="text-3xl font-bold text-slate-900 sm:text-4xl">
+      How we help
+    </h2>
+    <p class="mt-3 max-w-2xl text-slate-700">
+      Four practical ways we work with UK businesses to adopt AI without the noise.
+    </p>
+    <ul class="mt-10 grid gap-5 md:grid-cols-2">
+      {
+        sectors.map((s) => (
+          <li>
+            <a
+              href={`/services/${s.slug}/`}
+              class="group block h-full rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-400 hover:shadow-md"
+            >
+              <h3 class="text-xl font-bold text-slate-900 group-hover:text-brand-700">
+                {s.name}
+              </h3>
+              <p class="mt-2 text-slate-600">{s.tagline}</p>
+              <p class="mt-4 text-sm font-semibold text-brand-700">
+                Read more &rarr;
+              </p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="border-t border-slate-100 bg-white" aria-labelledby="industries-heading">
+    <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <h2 id="industries-heading" class="text-3xl font-bold text-slate-900 sm:text-4xl">
+        Who we work with
+      </h2>
+      <p class="mt-3 max-w-2xl text-slate-700">
+        We work across {industries.length} industries, from law firms and accountants to manufacturers, healthcare providers, ecommerce brands and SaaS teams.
+      </p>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {
+          featuredIndustries.map((i) => (
+            <li>
+              <a
+                href={`/ai-consulting-for-${i.slug}/`}
+                class="group block h-full rounded-xl border border-slate-200 bg-white p-5 transition hover:border-brand-400"
+              >
+                <p class="font-semibold text-slate-900 group-hover:text-brand-700">
+                  {i.name}
+                </p>
+                <p class="mt-1 text-sm text-slate-600">{i.tagline}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-6">
+        <a
+          href="/industries/"
+          class="inline-block rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-brand-400"
+        >
+          See all {industries.length} industries &rarr;
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="bg-slate-50"
+    aria-labelledby="locations-heading"
+  >
+    <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <h2 id="locations-heading" class="text-3xl font-bold text-slate-900 sm:text-4xl">
+        AI Consultant near you
+      </h2>
+      <p class="mt-3 max-w-2xl text-slate-700">
+        We cover {totalCounties} counties and over {totalTowns} towns across the UK.
+        Start with the most popular regions below, or
+        <a href="/locations/" class="font-semibold text-brand-700 hover:text-brand-900">see all locations</a>.
+      </p>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {
+          featuredCounties.map((c) => (
+            <li>
+              <a
+                href={`/${c.slug}/`}
+                class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-brand-400"
+              >
+                <p class="font-semibold text-slate-900 group-hover:text-brand-700">
+                  AI Consultant in {c.name}
+                </p>
+                <p class="mt-1 text-sm text-slate-600">{c.region}</p>
+                <p class="mt-2 text-xs text-slate-500">
+                  {c.towns.length} towns covered
+                </p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-6">
+        <a
+          href="/locations/"
+          class="inline-block rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-brand-400"
+        >
+          See all {totalCounties} counties &rarr;
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-4 py-20 sm:px-6" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="text-3xl font-bold text-slate-900 sm:text-4xl">
+      Common questions
+    </h2>
+    <dl class="mt-8 space-y-6">
+      {
+        faqs.map((f) => (
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <dt class="font-semibold text-slate-900">{f.question}</dt>
+            <dd class="mt-2 text-slate-700">{f.answer}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <CTA />
+  </div>
+</BaseLayout>

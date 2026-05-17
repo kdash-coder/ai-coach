@@ -1,0 +1,93 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CTA from '~/components/CTA.astro';
+import { getCollection, render } from 'astro:content';
+import { buildArticleSchema } from '~/lib/seo';
+
+export const getStaticPaths = async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+};
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const url = `/blog/${post.id}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Blog', url: '/blog/' },
+  { name: post.data.title, url },
+];
+
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  canonical={url}
+  ogType="article"
+  ogImage={post.data.heroImage}
+  breadcrumbs={breadcrumbs}
+  extraJsonLd={[
+    buildArticleSchema({
+      title: post.data.title,
+      description: post.data.description,
+      url,
+      datePublished: post.data.pubDate,
+      dateModified: post.data.updatedDate,
+      author: post.data.author,
+      image: post.data.heroImage,
+    }),
+  ]}
+>
+  <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <header class="mt-4">
+      <p class="text-sm text-slate-500">
+        <time datetime={post.data.pubDate.toISOString()}>
+          {dateFormatter.format(post.data.pubDate)}
+        </time>
+        {
+          post.data.updatedDate && (
+            <>
+              {' · Updated '}
+              <time datetime={post.data.updatedDate.toISOString()}>
+                {dateFormatter.format(post.data.updatedDate)}
+              </time>
+            </>
+          )
+        }
+      </p>
+      <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+        {post.data.title}
+      </h1>
+      <p class="mt-4 text-xl text-slate-700">{post.data.description}</p>
+      {
+        post.data.tags.length > 0 && (
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {post.data.tags.map((tag) => (
+              <li class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                {tag}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <div class="prose-content mt-10 text-slate-700">
+      <Content />
+    </div>
+
+    <CTA />
+  </article>
+</BaseLayout>

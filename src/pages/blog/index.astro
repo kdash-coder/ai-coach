@@ -1,0 +1,76 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Blog', url: '/blog/' },
+];
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title="AI Insights & News"
+  description="Latest AI news, analysis and practical guides for UK businesses. Written by the AI Coach team."
+  canonical="/blog/"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      AI Insights & News
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-slate-700">
+      Practical takes on AI for UK businesses, what is shipping, what is hype,
+      and what to do about it.
+    </p>
+
+    {
+      posts.length === 0 && (
+        <p class="mt-12 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
+          No posts yet. Add Markdown files to <code>src/content/blog/</code>.
+        </p>
+      )
+    }
+
+    <ul class="mt-10 space-y-6">
+      {
+        posts.map((post) => (
+          <li>
+            <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-400">
+              <p class="text-sm text-slate-500">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {dateFormatter.format(post.data.pubDate)}
+                </time>
+              </p>
+              <h2 class="mt-2 text-2xl font-bold text-slate-900">
+                <a href={`/blog/${post.id}/`} class="hover:text-brand-700">
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="mt-2 text-slate-700">{post.data.description}</p>
+              <p class="mt-4">
+                <a
+                  href={`/blog/${post.id}/`}
+                  class="text-sm font-semibold text-brand-700 hover:text-brand-900"
+                >
+                  Read article &rarr;
+                </a>
+              </p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

@@ -1,0 +1,257 @@
+---
+import { countiesByRegion, counties } from '~/data/locations';
+import type { County, Town } from '~/data/locations';
+
+interface Props {
+  currentCounty?: County;
+  currentTown?: Town;
+}
+
+const { currentCounty, currentTown } = Astro.props;
+const byRegion = countiesByRegion();
+const regions = Object.keys(byRegion).sort();
+
+const dropdownTowns = currentCounty
+  ? currentTown
+    ? currentCounty.towns.filter((t) => t.slug !== currentTown.slug)
+    : currentCounty.towns
+  : [];
+
+const totalCounties = counties.length;
+const totalTowns = counties.reduce((sum, c) => sum + c.towns.length, 0);
+---
+
+<div class="dropdown" data-locations-dropdown>
+  <button
+    type="button"
+    class="flex items-center gap-1 rounded px-3 py-2 font-medium text-slate-700 transition-colors hover:text-brand-700"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls="locations-mega-menu"
+    data-locations-dropdown-trigger
+  >
+    Locations
+    <svg
+      class="h-3 w-3 transition-transform duration-150"
+      aria-hidden="true"
+      viewBox="0 0 12 12"
+      fill="none"
+      data-chevron
+    >
+      <path
+        d="M3 4.5l3 3 3-3"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+
+  <div
+    id="locations-mega-menu"
+    class="mega-menu absolute inset-x-0 top-full z-50 hidden border-y border-slate-200 bg-white shadow-xl"
+    role="menu"
+    aria-labelledby="locations-mega-menu-heading"
+    data-locations-dropdown-menu
+  >
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
+      {
+        currentCounty ? (
+          <div>
+            <header class="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-5">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">
+                  {currentCounty.region}
+                </p>
+                <h2
+                  id="locations-mega-menu-heading"
+                  class="mt-1 text-2xl font-bold text-slate-900"
+                >
+                  Towns in {currentCounty.name}
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                  {dropdownTowns.length} dedicated AI consultant pages
+                </p>
+              </div>
+              <a
+                href="/locations/"
+                class="text-sm font-semibold text-brand-700 hover:text-brand-900"
+                role="menuitem"
+              >
+                See all UK counties &rarr;
+              </a>
+            </header>
+
+            <ul
+              class="grid max-h-[60vh] grid-cols-2 gap-x-3 gap-y-1 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+            >
+              {dropdownTowns.map((t) => (
+                <li>
+                  <a
+                    href={`/${currentCounty.slug}/${t.slug}/`}
+                    class="block rounded-md px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                    role="menuitem"
+                  >
+                    {t.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <p class="mt-6 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              Don’t see your town?{' '}
+              <a
+                href="/contact/"
+                class="font-semibold text-brand-700 hover:text-brand-900"
+              >
+                Get in touch.
+              </a>{' '}
+              We work across all of {currentCounty.name}.
+            </p>
+          </div>
+        ) : (
+          <div>
+            <header class="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-5">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">
+                  UK-wide coverage
+                </p>
+                <h2
+                  id="locations-mega-menu-heading"
+                  class="mt-1 text-2xl font-bold text-slate-900"
+                >
+                  AI Consultant locations
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                  {totalCounties} counties · {totalTowns}+ towns across the UK
+                </p>
+              </div>
+              <a
+                href="/locations/"
+                class="text-sm font-semibold text-brand-700 hover:text-brand-900"
+                role="menuitem"
+              >
+                See full directory &rarr;
+              </a>
+            </header>
+
+            <div class="grid max-h-[65vh] gap-x-8 gap-y-6 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {regions.map((region) => (
+                <section aria-label={region}>
+                  <h3 class="border-b border-slate-200 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    {region}
+                  </h3>
+                  <ul class="mt-2 space-y-0.5">
+                    {byRegion[region].map((c) => (
+                      <li>
+                        <a
+                          href={`/${c.slug}/`}
+                          class="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                          role="menuitem"
+                        >
+                          <span>{c.name}</span>
+                          <span class="text-xs font-medium text-slate-400">
+                            {c.towns.length}
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+
+            <p class="mt-6 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              Don’t see your area?{' '}
+              <a
+                href="/contact/"
+                class="font-semibold text-brand-700 hover:text-brand-900"
+              >
+                Get in touch.
+              </a>{' '}
+              We deliver AI consultancy UK-wide, remote and on-site.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .dropdown[data-open='true'] > .mega-menu {
+    display: block;
+  }
+  .dropdown[data-open='true'] [data-chevron] {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  const HOVER_CLOSE_DELAY = 200;
+  const dropdowns = document.querySelectorAll<HTMLElement>(
+    '[data-locations-dropdown]',
+  );
+
+  const setOpen = (d: HTMLElement, open: boolean) => {
+    d.dataset.open = open ? 'true' : 'false';
+    d.querySelector('[data-locations-dropdown-trigger]')?.setAttribute(
+      'aria-expanded',
+      open ? 'true' : 'false',
+    );
+  };
+
+  dropdowns.forEach((dropdown) => {
+    const trigger = dropdown.querySelector<HTMLButtonElement>(
+      '[data-locations-dropdown-trigger]',
+    );
+    if (!trigger) return;
+
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
+    const cancelClose = () => {
+      if (closeTimer) {
+        clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+    };
+    const scheduleClose = () => {
+      cancelClose();
+      closeTimer = setTimeout(() => setOpen(dropdown, false), HOVER_CLOSE_DELAY);
+    };
+
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = dropdown.dataset.open === 'true';
+      cancelClose();
+      setOpen(dropdown, !isOpen);
+    });
+
+    dropdown.addEventListener('mouseenter', () => {
+      cancelClose();
+      setOpen(dropdown, true);
+    });
+    dropdown.addEventListener('mouseleave', scheduleClose);
+
+    dropdown.addEventListener('focusin', () => {
+      cancelClose();
+      setOpen(dropdown, true);
+    });
+    dropdown.addEventListener('focusout', (e) => {
+      const next = e.relatedTarget as Node | null;
+      if (!next || !dropdown.contains(next)) {
+        setOpen(dropdown, false);
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    dropdowns.forEach((d) => {
+      if (!d.contains(e.target as Node)) setOpen(d, false);
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') dropdowns.forEach((d) => setOpen(d, false));
+  });
+</script>

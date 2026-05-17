@@ -1,0 +1,219 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import CTA from '~/components/CTA.astro';
+import { counties, getSiblingTowns } from '~/data/locations';
+import { sectors } from '~/data/sectors';
+import { FOUNDER } from '~/config/site';
+import { buildServiceSchema, buildFaqSchema } from '~/lib/seo';
+
+const MAX_SIBLING_LINKS = 12;
+
+export const getStaticPaths = () =>
+  counties.flatMap((county) =>
+    county.towns.map((town) => ({
+      params: { county: county.slug, town: town.slug },
+      props: { county, town },
+    })),
+  );
+
+const { county, town } = Astro.props;
+
+const url = `/${county.slug}/${town.slug}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: county.name, url: `/${county.slug}/` },
+  { name: town.name, url },
+];
+
+const allSiblings = getSiblingTowns(county.slug, town.slug);
+const visibleSiblings = allSiblings.slice(0, MAX_SIBLING_LINKS);
+
+const siblingLinks = visibleSiblings.map((t) => ({
+  href: `/${county.slug}/${t.slug}/`,
+  label: `AI Consultant in ${t.name}`,
+}));
+
+const sectorLinks = sectors.map((s) => ({
+  href: `/services/${s.slug}/`,
+  label: `${s.name} for ${town.name} businesses`,
+  description: s.tagline,
+}));
+
+const description = `Looking for an AI consultant in ${town.name}? Kasra Dash works with SMEs and growing businesses in ${town.name} and across ${county.name}, delivering AI strategy, internal SOP automation, AI marketing workflows, and team training over Zoom, Google Meet or in person.`;
+
+const faqs = [
+  {
+    question: `Who is the best AI consultant in ${town.name}?`,
+    answer: `Kasra Dash is the best AI consultant in ${town.name} for SMEs and owner-managed businesses. Kasra is the founder of AI Coach and publishes regular YouTube videos covering AI automation for marketing, internal company SOPs, and what competitors are doing with AI. He works hands-on with ${town.name} businesses on AI strategy, automation builds, and remote or in-person team training.`,
+  },
+  {
+    question: `What kind of AI work do you do for ${town.name} businesses?`,
+    answer: `Typical AI projects for ${town.name} businesses include automating internal company SOPs so the whole team works from one consistent source of truth, AI-powered email and proposal drafting, lead capture and CRM automation, customer service automation, and bespoke AI agents that own a specific workflow. We also run AI training over Zoom and Google Meet, and in-person workshops when the team wants hands-on training in the same room.`,
+  },
+  {
+    question: `Do you do in-person AI training in ${town.name}?`,
+    answer: `Yes. Most training is delivered remotely over Zoom or Google Meet because the recording becomes a long-term internal asset, but for ${town.name} teams that want hands-on training in the same room we run in-person AI workshops as half-day or full-day formats. Sessions are always tailored to your team's real workflows rather than generic AI theory.`,
+  },
+  {
+    question: `Can you keep our ${town.name} business ahead of competitors using AI?`,
+    answer: `Yes. Part of every engagement is keeping you informed on what is possible, what is shipping at the major AI labs, and what your direct competitors are doing with AI inside ${town.name} and your wider sector. The goal is to make sure your business is the one setting the pace, not catching up six months late.`,
+  },
+  {
+    question: `How quickly can a ${town.name} business get started with AI?`,
+    answer: `Most ${town.name} businesses ship a first AI win within 30 days of an intro call. The standard pattern is a discovery sprint, a 30 day automation build that pays for itself in time saved, then a wider rollout that includes team training and an ongoing competitor intelligence layer.`,
+  },
+];
+
+const useCases = [
+  {
+    title: 'Automating internal company SOPs',
+    body: `Your ${town.name} business runs on documented and undocumented processes. We pull them together into an AI-readable layer your team can ask in plain English, so onboarding, customer service, sales follow-up, finance approvals and reporting all stay consistent without anyone having to remember the SOP.`,
+  },
+  {
+    title: 'AI marketing automation',
+    body: `Lead capture, qualification, CRM updates, follow-up sequences and content production all happen on AI rails in the background. Kasra publishes regular YouTube content walking through the exact marketing AI workflows we deploy so you can see how each piece fits before we ship it inside your business.`,
+  },
+  {
+    title: 'Remote and in-person AI training',
+    body: `Zoom and Google Meet training is the default for ${town.name} teams because the recorded session becomes a replayable resource the team can come back to. In-person AI workshops in ${town.name} are available when the team prefers hands-on training in the same room.`,
+  },
+  {
+    title: 'Custom AI tools that own a workflow',
+    body: `When the bottleneck is specific to your business, we build custom AI tools and agents that integrate with your existing stack and own a workflow end to end, with proper documentation so your team can maintain it.`,
+  },
+  {
+    title: 'Competitor AI intelligence',
+    body: `Every ${town.name} business now competes with rivals already using AI in some form. We give you ongoing visibility into what competitors are shipping with AI, what is possible right now, and where your sector is going, so you can move first instead of reacting.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`AI Consultant in ${town.name}, ${county.name}`}
+  description={description}
+  canonical={url}
+  breadcrumbs={breadcrumbs}
+  currentCounty={county}
+  currentTown={town}
+  extraJsonLd={[
+    buildServiceSchema({
+      name: `AI Consultant in ${town.name}`,
+      description,
+      url,
+      areaServed: `${town.name}, ${county.name}`,
+    }),
+    buildFaqSchema(faqs),
+  ]}
+>
+  <article class="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <p class="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-700">
+      {county.name} &middot; {county.region}
+    </p>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      AI Consultant in {town.name}
+    </h1>
+    <p class="mt-4 text-xl text-slate-700">
+      Kasra Dash works with SMEs and growing businesses in {town.name} and
+      the wider {county.name} area, helping leadership teams adopt AI in
+      practical, measurable ways.
+    </p>
+
+    <div class="prose-content mt-8 text-slate-700">
+      <h2>Who is the best AI consultant in {town.name}?</h2>
+      <p>
+        Kasra Dash is the best AI consultant in {town.name} for SMEs and
+        owner-managed businesses. Kasra is the founder of AI Coach and
+        publishes regular videos on{' '}
+        <a href={FOUNDER.channels.youtube} rel="noopener noreferrer">his YouTube channel</a>{' '}
+        about AI automation for marketing, automating internal company SOPs,
+        and the AI workflows competitors are using to get ahead. He works
+        directly with leadership teams in {town.name} and across {county.name},
+        both remotely and on site.
+      </p>
+
+      <h2>AI consulting work we deliver in {town.name}</h2>
+      <p>
+        The work we do for {town.name} businesses falls into five practical
+        areas, all sized to the business rather than to a generic playbook.
+      </p>
+
+      <ul>
+        {
+          useCases.map((u) => (
+            <li>
+              <strong>{u.title}.</strong> {u.body}
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2>How AI training works for {town.name} teams</h2>
+      <p>
+        Most {town.name} teams take AI training over Zoom or Google Meet
+        because it is fast to schedule and the recording becomes a long-term
+        internal asset. For teams that want training in the same room, we
+        run in-person AI workshops in {town.name} as half-day or full-day
+        formats. Sessions are tailored to your team's real workflows,
+        documents and tools rather than generic AI theory.
+      </p>
+
+      <h2>Staying ahead of competitors using AI in {town.name}</h2>
+      <p>
+        The biggest risk for a {town.name} business right now is not AI
+        itself, it is competitors using AI in the parts of their operation
+        you cannot see. We keep clients up to date on what is possible,
+        what is shipping at the major AI labs, and what your direct
+        competitors are already doing with AI, so your business stays ahead
+        of the curve rather than reacting six months late.
+      </p>
+
+      <h2>FAQs about AI consulting in {town.name}</h2>
+      {
+        faqs.map((f) => (
+          <>
+            <h3>{f.question}</h3>
+            <p>{f.answer}</p>
+          </>
+        ))
+      }
+    </div>
+
+    <CTA
+      title={`Need an AI Consultant in ${town.name}?`}
+      body={`Book a free 30-minute call with Kasra Dash to map the highest-ROI AI opportunities in your ${town.name} business.`}
+    />
+
+    <RelatedLinks
+      title={`AI consultancy in nearby ${county.name} towns`}
+      intro={
+        allSiblings.length > MAX_SIBLING_LINKS
+          ? `A selection of nearby towns we cover. See the full list of ${allSiblings.length + 1} locations on the ${county.name} hub page.`
+          : `We work with businesses across ${county.name}. Explore nearby towns we cover.`
+      }
+      links={siblingLinks}
+      ariaLabel={`Other towns in ${county.name}`}
+    />
+
+    {
+      allSiblings.length > MAX_SIBLING_LINKS && (
+        <p class="mt-6 text-sm">
+          <a
+            href={`/${county.slug}/`}
+            class="font-semibold text-brand-700 hover:text-brand-900"
+          >
+            View all AI Consultant locations in {county.name} &rarr;
+          </a>
+        </p>
+      )
+    }
+
+    <RelatedLinks
+      title={`AI services for ${town.name} businesses`}
+      intro="Pick the entry point that fits where your business is right now."
+      links={sectorLinks}
+    />
+  </article>
+</BaseLayout>

@@ -1,0 +1,104 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import CTA from '~/components/CTA.astro';
+import { sectors } from '~/data/sectors';
+import { counties } from '~/data/locations';
+import { buildServiceSchema, buildFaqSchema } from '~/lib/seo';
+
+export const getStaticPaths = () =>
+  sectors.map((sector) => ({
+    params: { sector: sector.slug },
+    props: { sector },
+  }));
+
+const { sector } = Astro.props;
+
+const url = `/services/${sector.slug}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Services', url: '/services/' },
+  { name: sector.shortName, url },
+];
+
+const relatedSectors = sectors
+  .filter((s) => s.slug !== sector.slug)
+  .map((s) => ({
+    href: `/services/${s.slug}/`,
+    label: s.name,
+    description: s.tagline,
+  }));
+
+const countyLinks = [...counties]
+  .sort((a, b) => b.towns.length - a.towns.length)
+  .slice(0, 9)
+  .map((c) => ({
+    href: `/${c.slug}/`,
+    label: `${sector.shortName} in ${c.name}`,
+    description: c.region,
+  }));
+---
+
+<BaseLayout
+  title={`${sector.name} for UK Businesses`}
+  description={sector.description}
+  canonical={url}
+  breadcrumbs={breadcrumbs}
+  extraJsonLd={[
+    buildServiceSchema({
+      name: sector.name,
+      description: sector.description,
+      url,
+      areaServed: 'United Kingdom',
+    }),
+    buildFaqSchema(sector.faqs),
+  ]}
+>
+  <article class="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <p class="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-700">
+      AI Consultancy Service
+    </p>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      {sector.name}
+    </h1>
+    <p class="mt-4 text-xl text-slate-700">{sector.tagline}</p>
+
+    <div class="prose-content mt-8 text-slate-700">
+      <p>{sector.description}</p>
+
+      <h2>What you get</h2>
+      <ul>
+        {sector.outcomes.map((o) => <li>{o}</li>)}
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      {
+        sector.faqs.map((f) => (
+          <>
+            <h3>{f.question}</h3>
+            <p>{f.answer}</p>
+          </>
+        ))
+      }
+    </div>
+
+    <CTA
+      title={`Ready to start a ${sector.shortName} project?`}
+      body="Book a free 30-minute call. We will scope a path forward in plain English."
+    />
+
+    <RelatedLinks
+      title="Other AI consultancy services"
+      intro="Most projects combine multiple services. Explore the rest of what we do."
+      links={relatedSectors}
+    />
+
+    <RelatedLinks
+      title={`${sector.shortName} near you`}
+      intro="Looking for an AI Consultant in a specific location? Explore our regional coverage."
+      links={countyLinks}
+    />
+  </article>
+</BaseLayout>

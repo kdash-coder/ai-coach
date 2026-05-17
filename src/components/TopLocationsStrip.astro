@@ -1,0 +1,70 @@
+---
+import type { County, Town } from '~/data/locations';
+
+interface Props {
+  county: County;
+  currentTown?: Town;
+}
+
+const { county, currentTown } = Astro.props;
+
+const VISIBLE_COUNT = 5;
+const towns = currentTown
+  ? county.towns.filter((t) => t.slug !== currentTown.slug)
+  : county.towns;
+const initialVisible = Math.min(VISIBLE_COUNT, towns.length);
+---
+
+<aside
+  class="border-b border-slate-800 bg-slate-900 text-white"
+  aria-label={`Featured AI Consultant pages in ${county.name}`}
+  data-rotating-strip
+  data-county-slug={county.slug}
+>
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs sm:px-6 sm:text-sm">
+    <span class="whitespace-nowrap font-semibold text-slate-300">
+      AI Consultant in {county.name}:
+    </span>
+    <ul
+      class="flex flex-wrap items-center gap-x-3 gap-y-1"
+      data-strip-list
+    >
+      {
+        towns.map((t, i) => (
+          <li class={i < initialVisible ? '' : 'hidden'} data-strip-item>
+            <a
+              href={`/${county.slug}/${t.slug}/`}
+              class="text-white underline-offset-4 hover:underline"
+            >
+              {t.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      towns.length > VISIBLE_COUNT && (
+        <a
+          href={`/${county.slug}/`}
+          class="ml-auto whitespace-nowrap text-slate-300 hover:text-white"
+        >
+          See all {county.towns.length} &rarr;
+        </a>
+      )
+    }
+  </div>
+</aside>
+
+<script>
+  const VISIBLE_COUNT = 5;
+  const strips = document.querySelectorAll<HTMLElement>('[data-rotating-strip]');
+  strips.forEach((strip) => {
+    const items = Array.from(
+      strip.querySelectorAll<HTMLElement>('[data-strip-item]'),
+    );
+    if (items.length <= VISIBLE_COUNT) return;
+    const shuffled = items.slice().sort(() => Math.random() - 0.5);
+    items.forEach((li) => li.classList.add('hidden'));
+    shuffled.slice(0, VISIBLE_COUNT).forEach((li) => li.classList.remove('hidden'));
+  });
+</script>

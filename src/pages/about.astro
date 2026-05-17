@@ -1,0 +1,51 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CTA from '~/components/CTA.astro';
+import { SITE } from '~/config/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'About', url: '/about/' },
+];
+---
+
+<BaseLayout
+  title={`About ${SITE.name}`}
+  description={`Learn about ${SITE.name}, an AI consultancy helping UK businesses adopt AI strategically, safely and profitably.`}
+  canonical="/about/"
+  breadcrumbs={breadcrumbs}
+>
+  <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <Breadcrumbs items={breadcrumbs} />
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      About {SITE.name}
+    </h1>
+    <div class="prose-content mt-8 text-slate-700">
+      <p>
+        {SITE.name} is an AI consultancy helping UK businesses get value from
+        artificial intelligence, without the jargon, the six-figure retainers,
+        or the half-baked prototypes.
+      </p>
+      <h2>What we believe</h2>
+      <p>
+        Most businesses do not need a custom large language model. They need
+        someone who understands AI, understands their workflow, and can connect
+        the two with measurable results.
+      </p>
+      <h2>Who we work with</h2>
+      <p>
+        Owner-managed businesses, professional services firms and SMEs across the
+        UK. From law firms and accountants to manufacturers, consultancies and
+        creative agencies.
+      </p>
+      <h2>How we work</h2>
+      <p>
+        Discovery first, hype later. Every engagement starts by understanding the
+        business, finding the highest-leverage opportunities, and shipping something
+        useful within the first 30 days.
+      </p>
+    </div>
+    <CTA />
+  </article>
+</BaseLayout>

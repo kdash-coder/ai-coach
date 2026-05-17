@@ -1,0 +1,121 @@
+---
+import { SITE } from '~/config/site';
+import { counties } from '~/data/locations';
+import { sectors } from '~/data/sectors';
+import { industries } from '~/data/industries';
+
+const year = new Date().getFullYear();
+
+const featuredCounties = [...counties]
+  .sort((a, b) => b.towns.length - a.towns.length)
+  .slice(0, 6);
+
+const featuredIndustries = [
+  'small-businesses',
+  'smes',
+  'law-firms',
+  'finance',
+  'healthcare',
+  'ecommerce',
+  'manufacturing',
+]
+  .map((slug) => industries.find((i) => i.slug === slug))
+  .filter((i): i is (typeof industries)[number] => i !== undefined);
+---
+
+<footer class="mt-24 border-t border-slate-200 bg-slate-50">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="grid gap-10 md:grid-cols-5">
+      <div class="md:col-span-1">
+        <p class="text-sm font-bold text-slate-900">{SITE.name}</p>
+        <p class="mt-2 text-sm text-slate-600">{SITE.tagline}</p>
+        <address class="not-italic mt-4 text-sm text-slate-600">
+          <a href={`mailto:${SITE.email}`} class="hover:text-brand-700">{SITE.email}</a>
+        </address>
+      </div>
+
+      <nav aria-label="Services">
+        <p class="text-sm font-bold text-slate-900">Services</p>
+        <ul class="mt-3 space-y-2 text-sm">
+          {
+            sectors.map((s) => (
+              <li>
+                <a
+                  href={`/services/${s.slug}/`}
+                  class="text-slate-600 hover:text-brand-700"
+                >
+                  {s.shortName}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Industries">
+        <p class="text-sm font-bold text-slate-900">Industries</p>
+        <ul class="mt-3 space-y-2 text-sm">
+          {
+            featuredIndustries.map((i) => (
+              <li>
+                <a
+                  href={`/ai-consulting-for-${i.slug}/`}
+                  class="text-slate-600 hover:text-brand-700"
+                >
+                  {i.shortName}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a
+              href="/industries/"
+              class="font-semibold text-brand-700 hover:text-brand-900"
+            >
+              See all industries &rarr;
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Locations">
+        <p class="text-sm font-bold text-slate-900">Locations</p>
+        <ul class="mt-3 space-y-2 text-sm">
+          {
+            featuredCounties.map((c) => (
+              <li>
+                <a
+                  href={`/${c.slug}/`}
+                  class="text-slate-600 hover:text-brand-700"
+                >
+                  AI Consultant in {c.name}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a
+              href="/locations/"
+              class="font-semibold text-brand-700 hover:text-brand-900"
+            >
+              See all locations &rarr;
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Company">
+        <p class="text-sm font-bold text-slate-900">Company</p>
+        <ul class="mt-3 space-y-2 text-sm">
+          <li><a href="/about/" class="text-slate-600 hover:text-brand-700">About</a></li>
+          <li><a href="/blog/" class="text-slate-600 hover:text-brand-700">Blog</a></li>
+          <li><a href="/contact/" class="text-slate-600 hover:text-brand-700">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      <p>&copy; {year} {SITE.legalName}. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

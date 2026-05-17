@@ -1,0 +1,78 @@
+---
+import '~/styles/global.css';
+import Head from '~/components/Head.astro';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+import TopLocationsStrip from '~/components/TopLocationsStrip.astro';
+import type { County, Town } from '~/data/locations';
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+  buildBreadcrumbSchema,
+  buildFounderSchema,
+  type BreadcrumbItem,
+} from '~/lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  breadcrumbs?: BreadcrumbItem[];
+  extraJsonLd?: unknown[];
+  currentCounty?: County;
+  currentTown?: Town;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType,
+  noindex,
+  breadcrumbs = [],
+  extraJsonLd = [],
+  currentCounty,
+  currentTown,
+} = Astro.props;
+
+const jsonLd: unknown[] = [
+  buildOrganizationSchema(),
+  buildFounderSchema(),
+  buildWebSiteSchema(),
+  ...(breadcrumbs.length > 0 ? [buildBreadcrumbSchema(breadcrumbs)] : []),
+  ...extraJsonLd,
+];
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <Head
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
+  </head>
+  <body class="bg-white text-slate-800 antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded focus:bg-brand-700 focus:px-3 focus:py-2 focus:text-white"
+    >
+      Skip to main content
+    </a>
+    {currentCounty && <TopLocationsStrip county={currentCounty} currentTown={currentTown} />}
+    <Header currentCounty={currentCounty} currentTown={currentTown} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
