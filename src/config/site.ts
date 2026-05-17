@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://example.com';
+export const SITE_URL = 'https://www.bestaiconsultant.co.uk';
 
 export const SITE = {
   name: 'AI Coach',
