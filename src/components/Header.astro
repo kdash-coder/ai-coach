@@ -1,6 +1,7 @@
 ---
 import { SITE } from '~/config/site';
 import LocationsDropdown from '~/components/LocationsDropdown.astro';
+import MobileNav from '~/components/MobileNav.astro';
 import type { County, Town } from '~/data/locations';
 
 interface Props {
@@ -23,8 +24,8 @@ const isActive = (href: string) =>
   href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 ---
 
-<header class="relative border-b border-slate-200 bg-white">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+<header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
     <a
       href="/"
       class="flex items-center gap-2 font-bold text-slate-900 hover:text-brand-700"
@@ -36,10 +37,11 @@ const isActive = (href: string) =>
       >
         AI
       </span>
-      <span class="text-lg">{SITE.name}</span>
+      <span class="text-base sm:text-lg">{SITE.name}</span>
     </a>
-    <nav aria-label="Primary">
-      <ul class="flex items-center gap-1 text-sm sm:gap-2">
+
+    <nav class="hidden md:block" aria-label="Primary">
+      <ul class="flex items-center gap-1 text-sm lg:gap-2">
         {
           navLinks.map((link) => (
             <li>
@@ -63,5 +65,15 @@ const isActive = (href: string) =>
         </li>
       </ul>
     </nav>
+
+    <div class="flex items-center gap-2 md:hidden">
+      <a
+        href="/contact/"
+        class="inline-flex min-h-[40px] items-center rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800"
+      >
+        Book a call
+      </a>
+      <MobileNav />
+    </div>
   </div>
 </header>
